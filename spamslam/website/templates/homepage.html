@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>SpamSlam</title>
+<style type="text/css">
+		div.wrapper {
+		position: relative;
+		clear: both;
+		width: 100%;
+		border : 1px solid #000000;
+		overflow:auto;
+		}
+		div.left {
+		float: left;
+		width: 49%;
+		background: #ffffff;
+		border-right : 1px solid #000006;
+
+		}	
+		div.right {
+		float: right;
+		width: 49%;
+		background: #ffffff;
+		}
+		.wrapper p{
+		margin:0px;
+		}
+		
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<div class="wrapper"><h1>SpamSlam</h1>
+	
+		<div class="left">
+			<h2>Sender</h2>
+			<form>
+				<input type='text' name='email_body' id='email_body'>
+				<input type="submit" value="Send" id='send_email'>
+			</form>
+		</div>
+		<div class="right">
+			<h2>Receiver</h2>
+			<button type='button' id='refresh'>Refresh</button>
+		</div>
+	
+	</div>
+
+</body>
+</html>
