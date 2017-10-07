@@ -8,7 +8,6 @@
 		position: relative;
 		clear: both;
 		width: 100%;
-		border : 1px solid #000000;
 		overflow:auto;
 		}
 		div.left {
@@ -26,6 +25,18 @@
 		.wrapper p{
 		margin:0px;
 		}
+		.button {
+		    background-color: #4CAF50;
+		    border: none;
+		    color: white;
+		    padding: 15px 32px;
+		    text-align: center;
+		    text-decoration: none;
+		    display: inline-block;
+		    font-size: 16px;
+		    margin: 4px 2px;
+		    cursor: pointer;
+		}
 		
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -33,18 +44,24 @@
 </head>
 
 <body>
-<div class="wrapper"><h1>SpamSlam</h1>
+<div align="center" class="wrapper"><h1>SpamSlam</h1>
 	
-		<div class="left">
+		<div align="center" class="left">
 			<h2>Sender</h2>
+			<br>
+			<br>
 			<form>
-				<input type='text' name='email_body' id='email_body'>
-				<input type="submit" value="Send" id='send_email'>
+			  	<textarea id="email_body" rows="10" cols="70"></textarea>
+			  	<br>
+			  	<br>
+			  	<input type="submit" class="button" value="Send" id='send_email'>
 			</form>
 		</div>
-		<div class="right">
+		<div align="center" class="right">
 			<h2>Receiver</h2>
-			<button type='button' id='refresh'>Refresh</button>
+			<br>
+			<br>
+			<button type='button' class="button" id='refresh'>Refresh</button>
 		</div>
 	
 	</div>

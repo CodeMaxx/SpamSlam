@@ -1,0 +1,57 @@
+import re
+import numpy as np
+import pickle
+
+def predict_from_text():
+	with open('test.txt') as t:
+		raw_message = t.readlines()
+	print(raw_message)
+	raw_message[0] = raw_message[0].replace('\n', ' ')
+	list_of_words = raw_message[0].split()
+
+	for y in list_of_words:
+		y = re.sub(r'\W+', '', y)
+		y = y.lower()
+
+	with open('list.txt') as f:
+	    content = f.readlines()
+
+	words = [x[10:x.find(':')] for x in content]
+	print(words)
+	freq = {}
+	freq = freq.fromkeys(words, 0)
+
+	for word in list_of_words:
+		if word in freq.keys():
+			print('YOOO')
+			freq[word] += 1
+
+	capital_data = []
+	count=0
+	for char in raw_message[0]:
+		if char.isupper():
+			count += 1
+		if not char.isupper():
+			if count != 0:
+				capital_data.append(count)
+			count = 0
+
+	print(freq)
+	print(len(list_of_words))
+	new_list = []
+	for xyz in words:
+		new_list.append(freq[xyz])
+
+	fourty_eight_attributes = 100*np.array(new_list)/float(len(list_of_words))
+	six_attributes = np.array([raw_message.count(';'), raw_message.count('('), raw_message.count('['), raw_message.count('!'), raw_message.count('$'), raw_message.count('#')])/len(raw_message[0])
+	last_three = np.array([float(sum(capital_data))/float(len(capital_data)), max(capital_data), sum(capital_data)])
+
+	predict_X = np.concatenate([fourty_eight_attributes, six_attributes, last_three])
+
+	print(fourty_eight_attributes)
+	print(predict_X.shape)
+
+	pickle_in = open('trained_email_classifier.pickle','rb')
+	mlp=pickle.load(pickle_in)
+	ans = mlp.predict([predict_X])
+	return ans
