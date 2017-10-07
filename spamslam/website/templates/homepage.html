@@ -120,6 +120,7 @@
 				<h5><strong><font size="+2">What Sender wishes to send</font><br></strong></h5>
 				<br>
 				<p>
+					{{ sender_balance }}
 				<form>
 			  		<textarea id="content" rows="10" cols="40" style="resize:none;background-color: rgba(0,0,0,0)"></textarea>
 			  		<br>
@@ -131,6 +132,7 @@
 			<div align="center" class="col-sm-4">
 				<h5><strong><font size="+2">Here's what Receiver receives</font><br><br></strong></h5>   
 				<br> 
+				{{ receiver_balance }}
 				<button onclick="location.reload()">Refresh</button>
 				{% for email in emails %}
 					<p>{{ email.content }}</p>

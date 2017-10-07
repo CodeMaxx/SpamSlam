@@ -12,9 +12,14 @@ from predict import predict_from_text
 import subprocess
 # Create your views here.
 
+sender_balance = 100;
+receiver_balance = 100;
+
 def home(request):
 	emails = Email.objects.all().order_by('-email_id')
-	return render(request, 'homepage.html', {'emails' : emails})
+	global sender_balance
+	global receiver_balance
+	return render(request, 'homepage.html', {'emails' : emails, 'sender_balance': sender_balance, 'receiver_balance': receiver_balance})
 
 def check_spam(input_sentence):
 	f = open('list.txt', 'w')
@@ -24,12 +29,23 @@ def check_spam(input_sentence):
 
 
 def redeam(transaction):
+	global sender_balance
+	global receiver_balance
 	print "Buying tokens for receiver..."
+	receiver_balance -= 2;
 	# Buy tokens with receiver_eth_id
 	print "Bought tokens for receiver!"
-	result = bool(check_spam(content)) # True when spam, False otherwise
-	print "Distributing money..."
-	# Start the redeaming process here based on the result
+	if transaction.marked:
+		result = bool(check_spam(content)) # True when spam, False otherwise
+		print "Distributing money..."
+		# Start the redeaming process here based on the result
+	
+		if result == transaction.marked:
+			receiver_balance += 2
+			sender_balance -= 10
+	else:
+		receiver_balance += 2
+	# Update sender balance and receiver balance
 	print "Transaction complete!"
 	transaction.is_processed = True
 	transaction.save()
@@ -47,6 +63,7 @@ def sending(request):
 		market_address = str(subprocess.check_output(['node','createMarket.js']))
 		print "Market created!"
 		print "Buying tokens for sender..."
+		
 		# Buy tokens with sender_eth_id
 		print "Bought tokens for sender!"
 		transaction.market_address = market_address
