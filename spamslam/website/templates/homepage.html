@@ -42,6 +42,38 @@
 	<!-- Fonts -->
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 	<link href='http://fonts.googleapis.com/css?family=Wire+One' rel='stylesheet' type='text/css'>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#send_email').click(function(){
+				var cont = $('#content').val();
+				$.post('./send/',
+				{
+					content: cont,
+					sender_eth_id: '', // TODO
+					receiver_eth_id: '' // TODO
+				},
+				function(result){
+					console.log("Sending: " + result);
+				});
+				$('#content').html('');
+			});
+
+			$(".spamornot").click(function(){
+				var email_id = this.attr('email_id');
+				var marked = this.attr('value');
+				$.post('./read/',
+				{
+					'email_id' : email_id,
+					'marked' : marked,
+				},
+				function(result){
+					console.log('Reading: ' + result);
+				}
+				)
+			});
+		});
+	</script>
 </head>
 
 <!-- use "theme-invert" class on bright backgrounds, also try "text-shadows" class -->
@@ -89,7 +121,7 @@
 				<br>
 				<p>
 				<form>
-			  		<textarea id="email_body" rows="10" cols="40" style="resize:none;background-color: rgba(0,0,0,0)"></textarea>
+			  		<textarea id="content" rows="10" cols="40" style="resize:none;background-color: rgba(0,0,0,0)"></textarea>
 			  		<br>
 			  		<br>
 			  		<input type="submit" class="button" value="Send" id='send_email'>
@@ -99,7 +131,12 @@
 			<div align="center" class="col-sm-4">
 				<h5><strong><font size="+2">Here's what Receiver receives</font><br><br></strong></h5>   
 				<br> 
-				<p>Tempore, eos, voluptatem minus commodi error aut eaque neque consequuntur optio nesciunt quod quibusdam. Ipsum, voluptatibus, totam, modi perspiciatis repudiandae odio ad possimus molestias culpa optio eaque itaque dicta quod cupiditate reiciendis illo illum aspernatur ducimus praesentium quae porro alias repellat quasi cum fugiat accusamus molestiae exercitationem amet fugit sint eligendi omnis adipisci corrupti. Aspernatur.</p>    
+				<button onclick="location.reload()">Refresh</button>
+				{% for email in emails %}
+					<p>{{ email.content }}</p>
+					<button email_id='{{ email.email_id }}' value='1' class='spamornot'>Spam</button>
+					<button email_id='{{ email.email_id }}' value='0' class='spamornot'>Not Spam</button>
+				{% endfor %}   
 				<h5><strong>Author links<br></strong></h5>    
 				<p><a href="http://be.net/pozhilov9409">Behance</a> / <a href="https://twitter.com/serggg">Twitter</a> / <a href="http://linkedin.com/pozhilov">LinkedIn</a> / <a href="https://www.facebook.com/pozhilov">Facebook</a></p>
 			</div>
@@ -209,7 +246,7 @@
 
 
 <!-- Load js libs only when the page is loaded. -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="assets/js/modernizr.custom.72241.js"></script>
 <!-- Custom template scripts -->

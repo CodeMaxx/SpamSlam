@@ -13,7 +13,8 @@ import subprocess
 # Create your views here.
 
 def home(request):
-	return render(request, 'homepage.html', {})
+	emails = Email.objects.all().order_by('-email_id')
+	return render(request, 'homepage.html', {'emails' : emails})
 
 def check_spam(input_sentence):
 	f = open('list.txt', 'w')
@@ -21,6 +22,17 @@ def check_spam(input_sentence):
 	f.close()
 	prediction = predict_from_text()
 
+
+def redeam(transaction):
+	print "Buying tokens for receiver..."
+	# Buy tokens with receiver_eth_id
+	print "Bought tokens for receiver!"
+	result = bool(check_spam(content)) # True when spam, False otherwise
+	print "Distributing money..."
+	# Start the redeaming process here based on the result
+	print "Transaction complete!"
+	transaction.is_processed = True
+	transaction.save()
 
 def sending(request):
 	if request.method == "POST":
@@ -31,16 +43,16 @@ def sending(request):
 		email_id = Email.objects.latest('email_id')
 		transaction = Transaction(email_id=email_id, market_address=null)
 		transaction.save()
+		print "Creating market..."
 		market_address = str(subprocess.check_output(['node','createMarket.js']))
+		print "Market created!"
+		print "Buying tokens for sender..."
 		# Buy tokens with sender_eth_id
+		print "Bought tokens for sender!"
 		transaction.market_address = market_address
 		transaction.save()
 		if transaction.is_read:
-			# Buy tokens with receiver_eth_id
-			result = bool(check_spam(content)) # True when spam, False otherwise
-			# Start the redeaming process here based on the result
-			transaction.is_processed = True
-			transaction.save()
+			redeam(transaction)
 
 def reading(request):
 	if request.method == "POST":
@@ -51,8 +63,4 @@ def reading(request):
 		transaction.is_read = True
 		transaction.save()
 		if transaction.market_address is not null:
-			# Buy tokens with receiver_eth_id
-			result = bool(check_spam(content)) # True when spam, False otherwise
-			# Start the redeaming process here based on the result
-			transaction.is_processed = True
-			transaction.save()
+			redeam(transaction)
