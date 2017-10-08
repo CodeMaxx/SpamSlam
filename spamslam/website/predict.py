@@ -31,7 +31,7 @@ def predict_from_text():
 
 	for word in list_of_words:
 		if word in freq.keys():
-			print('YOOO')
+			# print('YOOO')
 			freq[word] += 1
 
 	capital_data = []
@@ -52,7 +52,7 @@ def predict_from_text():
 
 	fourty_eight_attributes = 100*np.array(new_list)/float(len(list_of_words))
 	six_attributes = np.array([raw_message.count(';'), raw_message.count('('), raw_message.count('['), raw_message.count('!'), raw_message.count('$'), raw_message.count('#')])/len(raw_message[0])
-	print "Capital data", capital_data
+	# print "Capital data", capital_data
 	if capital_data:
 		last_three = np.array([float(sum(capital_data))/float(len(capital_data)), max(capital_data), sum(capital_data)])
 	else:
