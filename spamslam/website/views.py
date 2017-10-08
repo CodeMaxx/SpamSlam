@@ -11,16 +11,16 @@ from predict import predict_from_text
 
 import subprocess
 
+import requests
+import json
+
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
-sender_balance = 100;
-receiver_balance = 100;
-
 def home(request):
 	emails = Email.objects.all().order_by('-email_id')
-	global sender_balance
-	global receiver_balance
+	sender_balance = subprocess.check_output(['node', 'getBalance.js', '0'])
+	receiver_balance = subprocess.check_output(['node', 'getBalance.js', '1'])
 	return render(request, 'homepage.html', {'emails' : emails, 'sender_balance': sender_balance, 'receiver_balance': receiver_balance})
 
 def check_spam(input_sentence):
@@ -32,24 +32,33 @@ def check_spam(input_sentence):
 
 
 def redeam(transaction, content):
-	global sender_balance
-	global receiver_balance
-	print "Buying tokens for receiver..."
-	receiver_balance -= 2;
-	# Buy tokens with receiver_eth_id
-	print "Bought tokens for receiver!"
 	if transaction.marked_value:
-		# print "trans", transaction.marked_value
+		print "Buying tokens for sender..."
+		buySender = subprocess.check_output(['node', 'buyOut.js', market_address, '0', '0'])
+		print "Buy Sender", buySender
+		print "Bought tokens for sender!"
+
+		print "Buying tokens for receiver..."
+		# Buy tokens with receiver_eth_id
+		buyReceiver = subprocess.check_output(['node', 'buyOut.js', transaction.market_address, '1', str(int(transaction.marked_value))])
+		print "Buy Receiver", buyReceiver
+		print "Bought tokens for receiver!"
+
 		print "checkspam:", check_spam(content)
 		result = bool(check_spam(content)) # True when spam, False otherwise
 		print "booled checkspam:", result
 		print "Distributing money..."
 		# Start the redeaming process here based on the result
-		if result == transaction.marked_value:
-			receiver_balance += 2
-			sender_balance -= 10
+		r = requests.get('localhost:8000/api/markets/' + transaction.market_address + "/?format=json")
+		eventapi = json.loads(r.content)
+		eventAddress = eventapi['event']['contract']['address']
+		resolveSpam = subprocess.check_output(['node', 'resolveMarket.js', str(int(result))])
+		print "resolveSpam", resolveSpam
+		# TODO - redeem/withdraw tokens to ether
+		senderCheckout = subprocess.check_output(['node', 'tokenCheckout.js', '0'])
+		receiverCheckout = subprocess.check_output(['node', 'tokenCheckout.js', '1'])
 	else:
-		receiver_balance += 2
+		resolveNotSpam = subprocess.check_output(['node', 'resolveMarket.js', '0'])
 	# Update sender balance and receiver balance
 	print "Transaction complete!"
 	transaction.is_processed = True
@@ -64,17 +73,14 @@ def sending(request):
 		receiver_eth_id = request.POST["receiver_eth_id"]
 		Email(content=content, sender_eth_id=sender_eth_id,receiver_eth_id=receiver_eth_id).save()
 		email_id = Email.objects.latest('email_id')
-		print email_id
 		transaction = Transaction(email_id=email_id, market_address=None)
 		transaction.save()
 		print "Creating market..."
-		# market_address = str(subprocess.check_output(['node','createMarket.js']))
-		print "Market created!"
-		print "Buying tokens for sender..."
-
-		# Buy tokens with sender_eth_id
-		print "Bought tokens for sender!"
-		market_address = '0x' + "a"*40
+		market_address = str(subprocess.check_output(['node','createMarket.js']))
+		print "Market created!", market_address
+		depositToken = subprocess.check_output(['node','depositToken.js', market_address])
+		print "Deposit Token", depositToken
+		
 		transaction.market_address = market_address
 		transaction.save()
 		if transaction.is_read:
@@ -83,22 +89,14 @@ def sending(request):
 
 @csrf_exempt
 def reading(request):
-	# print "kaha hai?"
 	if request.method == "POST":
-		# print "post mein"
 		marked = int(request.POST["marked"], 10)
-		# print "Not spam", marked
 		email_id = request.POST["email_id"]
-		# print email_id
 		transaction = Transaction.objects.get(email_id=email_id)
 		transaction.marked_value = bool(marked)
-		# print "marked", marked
-		# print "trans marked", transaction.marked_value
 		transaction.is_read = True
 		transaction.save()
 		content = Email.objects.get(email_id=email_id).content
-		# print "her"
 		if transaction.market_address is not None:
-			# print "herasdfa"
 			redeam(transaction, content)
 		return HttpResponse('Done')
