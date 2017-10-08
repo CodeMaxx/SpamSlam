@@ -67,5 +67,5 @@ def predict_from_text():
 	mlp=pickle.load(pickle_in)
 	ans = mlp.predict([predict_X])
 	# print "answer:", ans
-	# return ans[0]
-	return 1
+	return ans[0]
+	# return 1
