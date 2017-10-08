@@ -1,0 +1,27 @@
+{
+  "name": "gnosis-dev-kit",
+  "version": "1.0.0",
+  "description": "Gnosis DApp example",
+  "main": "createMarket.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gnosis/gnosis-dev-kit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gnosis/gnosis-dev-kit/issues"
+  },
+  "homepage": "https://github.com/gnosis/gnosis-dev-kit#readme",
+  "dependencies": {
+    "@gnosis.pm/gnosis-core-contracts": "../gnosis-core-contracts",
+    "@gnosis.pm/gnosisjs": "^0.5.2",
+    "truffle-contract": "^3.0.0"
+  }
+}
